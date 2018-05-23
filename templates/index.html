@@ -6,11 +6,14 @@
   <!-- meta -->
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
   <!-- Bootstrap CSS File -->
   <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-  <title>The Bryan Lowes</title>
+
+  <title>Stock Information Page</title>
   <meta content="" name="keywords">
   <meta content="" name="description">
 
@@ -20,32 +23,206 @@
   <!-- Main Stylesheet File -->
   <link href="css/style.css" rel="stylesheet">
 
+  <!-- Plotly -->
+  <script src="https://unpkg.com/simple-statistics@5.0.0/dist/simple-statistics.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
   <!-- Responsive css -->
   <link href="css/responsive.css" rel="stylesheet">
 
 </head>
 
 <body>
-  <!-- start section header -->
-    <div id="header" class="home">
   
-      <div class="container">
-        <div class="header-content">
-          <h1>Stock Market Overview</h1>
-          <h2>Search by Company Name<span class="typed"></span></h1>
-          <p>All Your Stock Data At One Place</p>
-        </div>
+  <!-- page header -->
+  <div class="container">
+      <div class = "row">
+          <div class="col-md-12 jumbotron text-center">
+            <h1 class="text-primary">Stock Market Overview</h1>
+            <p> All your stock market data in one place</p>
+          </div>
       </div>
+  </div>  
+
+  <!-- ticker button -->
+  <div class="container">
+    <h2>Search by Company Ticker<span class="typed"></span></h1>
+      <form class="form-inline">
+      <div class="form-group">
+        <label for="stockInput">Enter Ticker:</label>
+        <input type="text" class="form-control" id="stockInput" placeholder="Ticker">
+      </div>
+      <button id="submit" type="submit" class="btn btn-default">Plot Stock</button>
+      </form>
+    <div class="container">
+      <div id="daily_stock_chart"></div>    
+    </div>
+    <div class="container"
+      <div id="spCompare"></div>
     </div>
 
-  <!-- End section header -->
+  <!-- javascript -->
+  <script>
+    // button handler
+    function handleSubmit(){
+      // prevent page from refreshing
+      Plotly.d3.event.preventDefault();
 
-  <!-- Start Line Graph -->
-  <div class="container">
-  <div id="chart">
-    Input Your Line Graph Here
-  </div>
-  <script src="plots.js"></script>
+      // select input value from the form
+      let stock=Plotly.d3.select("#stockInput").node().value;
+      stock=stock.toUpperCase();
+      // clear the input value
+      Plotly.d3.select("#stockInput").node().value = "";
 
-  </div>
-  <!-- End Line Graph -->
+      // Build the plot with the new stock
+      buildDailyPlot(stock);
+      spCompare(stock);
+    } 
+  
+    function buildDailyPlot(stock){
+      var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
+      var urlSP = `https://api.iextrading.com/1.0/stock/spy/batch?types=quote,news,chart&range=2y&last=1`
+  
+    Plotly.d3.json(url, function(error, response) {
+  
+      if (error) return console.warn(error);
+  
+      // Grab values from the response json object to build the plots
+      var name = response.quote.companyName;
+      let date = [];
+      let close =[];
+      for (let i = 0; i < response.chart.length; i++) { 
+        var dates = response.chart[i].date;
+        date.push(dates);
+        var closingPrices = response.chart[i].close;
+        close.push(closingPrices);}
+
+    var trace1 = {
+        type: "scatter",
+        mode: "lines",
+        name: name,
+        x: date,
+        y: close,
+        line: {
+            color: "#17BECF"
+        }
+        };
+
+    var data = [trace1];
+
+    var layout = {
+        title: `${stock} Daily Stock Price`,
+        xaxis: {
+          range: [date[0], date[-1]],
+          type: "date"
+        },
+        yaxis: {
+          autorange: true,
+          type: "linear"
+        }
+      };
+  
+      Plotly.newPlot("daily_stock_chart", data, layout);
+    });
+  } 
+  
+  // compare user ticker versus S&P 500
+  function spCompare(stock) {
+
+  var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
+  var urlSP = `https://api.iextrading.com/1.0/stock/spy/batch?types=quote,news,chart&range=2y&last=1`
+
+  Plotly.d3.json(url, function(error, response) {
+
+  if (error) return console.warn(error);
+
+  // Grab values from the response json object to build the plots
+  var name = response.quote.companyName;
+  let date = [];
+  let close =[];
+  let initialprice1 = [];
+  for (let i = 0; i < response.chart.length; i++) { 
+    var dates = response.chart[i].date;
+    date.push(dates);
+    var closingPrices = response.chart[i].close;
+    close.push(closingPrices);
+    var change1 =  closingPrices/response.chart[0].close;
+    initialprice1.push(change1*100);}
+  
+  
+  console.log(name)
+  console.log(date)
+  console.log(close)
+  Plotly.d3.json(urlSP, function(error, response){
+  
+  if (error) return console.warn(error);
+  
+  var nameSP = response.quote.companyName;
+  let dateSP = [];
+  let closeSP =[];
+  let initialprice2 = [];
+  for (let i = 0; i < response.chart.length; i++) { 
+    var datesSP = response.chart[i].date;
+    dateSP.push(datesSP);
+    var closingPricesSP = response.chart[i].close;
+    closeSP.push(closingPricesSP);
+    var change2 = closingPricesSP/response.chart[0].close;
+    initialprice2.push(change2*100);}
+    
+
+  console.log(nameSP)
+  console.log(dateSP)
+  console.log(closeSP)
+
+
+  var trace1 = {
+    type: "scatter",
+    mode: "lines",
+    name: name,
+    x: date,
+    y: initialprice1,
+    line: {
+      color: "#17BECF"
+    }
+  };
+
+  var trace2 = {
+    type:"scatter",
+    mode:"lines",
+    name: nameSP,
+    x:dateSP,
+    y:initialprice2,
+    line:{
+      color:"black"
+    }
+  
+  };
+  var data = [trace1, trace2];
+  
+  var layout = {
+    title: `Comparing ${stock} to S&P 500 Performance`,
+    xaxis: {
+      range: [date[0], date[-1]],
+      type: "date"
+    },
+    yaxis: {
+      autorange: true,
+      type: "linear"
+    }
+  };
+
+  Plotly.newPlot("spCompare", data, layout);
+})});
+}
+
+
+
+
+   // Add event listener for submit button
+   Plotly.d3.select("#submit").on("click", handleSubmit);
+
+  </script>
+
+  </html>
+  
+ 
