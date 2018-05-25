@@ -29,6 +29,7 @@
 
   <!-- Responsive css -->
   <link href="css/responsive.css" rel="stylesheet">
+  <script src="https://d3js.org/d3.v5.min.js"></script>
 
 </head>
 
@@ -77,8 +78,52 @@
       // Build the plot with the new stock
       buildDailyPlot(stock);
       spCompare(stock);
+      stockHistory(stock);
+      // storing the data in mongo
+      console.log('stock:', stock);
+      urlhistory = `http://localhost:5000/stocks/${stock}`
+
     } 
-  
+
+    function stockHistory(stock){ 
+      var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
+      Plotly.d3.json(url, function(error, response){
+        if (error) return console.warn(error);
+
+        let close = response.quote.close;
+        let open = response.quote.open;
+        console.log(close);
+        console.log(open);
+
+        urlhistory = `http://localhost:5000/stocks/${stock}`
+        
+        data = {
+          "open":open,
+          "close":close,
+          "stock":stock
+        }
+
+        Plotly.d3.json(urlhistory, function(error, data){
+            if (error) return console.warn(error);
+             
+             console.log(data.response);
+        });
+
+      });
+
+  //    let urlhistory = `http://localhost:5000/stocks/${stock}`
+    //  console.log(urlhistory);
+     // Plotly.d3.json(urlhistory, function(error, data) {
+      //  if (error) return console.warn(error);
+            
+      //      console.log('stock', stock)
+        //    console.log(urlhistory);
+        //    console.log('stockHistory resonse : ')
+        //    console.log(data.response);
+
+  //  });
+    }
+
     function buildDailyPlot(stock){
       var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
       var urlSP = `https://api.iextrading.com/1.0/stock/spy/batch?types=quote,news,chart&range=2y&last=1`
@@ -150,9 +195,6 @@
     initialprice1.push(change1*100);}
   
   
-  console.log(name)
-  console.log(date)
-  console.log(close)
   Plotly.d3.json(urlSP, function(error, response){
   
   if (error) return console.warn(error);
