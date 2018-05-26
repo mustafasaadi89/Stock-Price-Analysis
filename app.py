@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, redirect
 # from flask_pymongo import PyMongo
-import requests
-import datetime
+# import requests
+# import datetime
 
 # create instance of flask app
 app = Flask(__name__)
