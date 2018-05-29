@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <!-- meta -->
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <!-- Bootstrap CSS File -->
+  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+  <title>Stock History Page</title>
+  <meta content="" name="keywords">
+  <meta content="" name="description">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,500i,600,600i,700,700i|Playfair+Display:400,400i,700,700i,900,900i" rel="stylesheet">
+
+  <!-- Main Stylesheet File -->
+  <link href="css/style.css" rel="stylesheet">
+
+  <!-- Plotly -->
+  <script src="https://unpkg.com/simple-statistics@5.0.0/dist/simple-statistics.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  <!-- Responsive css -->
+  <link href="css/responsive.css" rel="stylesheet">
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <style>
+        table, th, td {
+            border: .5px solid black;
+            background-color:#a0d8a5;
+        }
+        th, td {
+    padding-top: 15px;
+    padding-bottom: 10px;
+    text-align: left;
+    color: Black;
+            }
+  </style>
+</head>
+
+<body>
+  <!-- page header -->
+  <div class="container">
+      <div class = "row">
+          <div class="col-md-12 jumbotron text-center">
+            <h1 class="text-primary">Stock History Recorded Data</h1>
+            <table>
+            <!---   First-->
+                    {% for name in stock %}
+                    <div class="col-md-3" >
+                    <ul class="list-group">
+                        <li class="list-group-item" style="background-color:#a0d8a5">
+                            <strong>Ticker:</strong> {{ name.ticker_s }}</li>
+                        <li class="list-group-item" style="background-color:#a0d8a5">
+                                    <strong>Company&nbsp;Name:</strong> {{ name.company_name }}</li>    
+                        <li class="list-group-item" style="background-color:#a0d8a5">
+                            <strong>Close&nbsp;Value:</strong> {{ name.close_value }}</li>
+                        <li class="list-group-item" style="background-color:#a0d8a5">
+                            <strong>Open&nbsp;Value:</strong> {{ name.open_value }}</li>
+                        <li class="list-group-item" style="background-color:#a0d8a5">
+                            <strong>Recorded&nbsp;Date:</strong> {{ name.ddate }}</li>
+                    </ul>
+                    </div>        
+                    {% endfor %}
+            </table>
+            <!--- First-->
+
+        </div>
+      <div>
+    <!--- Second--> 
+    <div class="col-md-12 jumbotron text-center">
+    <div class="container">
+    <table>
+            <tr>
+                <th>&nbsp;Ticker&nbsp;</th><th></th>
+                <th>&nbsp;Company&nbsp;Name&nbsp;</th><th></th>
+                <th>&nbsp;Close&nbsp;Value&nbsp;</th><th></th>
+                <th>&nbsp;Open&nbsp;Value&nbsp;</th><th></th>
+                <th>&nbsp;Recorded&nbsp;Date&nbsp;</th>
+            </tr>  
+                {% for name in stock %}   
+            
+            <tr>
+              <td>&nbsp;{{ name.ticker_s }}&nbsp;</td><td></td>
+              <td>&nbsp;{{ name.company_name }}&nbsp;</td><td></td>              
+              <td>&nbsp;{{ name.close_value }}&nbsp;</td><td></td>
+              <td>&nbsp;{{ name.open_value }}&nbsp;</td><td></td>
+              <td>&nbsp;{{ name.ddate }}&nbsp;</td>
+            </tr>
+          {% endfor %}  
+    </table>
+    </div>
+    </div>
+    <br> <br><br>
+    <!--- Second-->
+        
+  </div>  
+
+  </html>
