@@ -73,7 +73,33 @@
       <div id="spCompare">
       </div>
     </div>
-
+    <div class="card mb-6">
+      <div class = "card-body"> 
+          <small id="NewsDate"></small>
+          <h3 id="News1"></h3>
+          <p id="NewsSSummary1"></p>
+          <a id="NewsURL1" target="blank" href="more info"></a>
+          <br>
+          <small id="NewsDate2"></small>
+          <h3 id="News2"></h3>
+          <p id="NewsSSummary2"></p>
+          <a id="NewsURL2" target="blank">More Info</a>
+          <br>
+          <small id="NewsDate3"></small>
+          <h3 id="News3"></h3>
+          <p id="NewsSSummary3"></p>
+          <a id="NewsURL3" target="blank">More Info</a>
+          <br>
+          <small id="NewsDate4"></small>
+          <h3 id="News4"></h3>
+          <p id="NewsSSummary4"></p>
+          <a id="NewsURL4" target="blank">More Info</a>
+          <br>
+          <small id="NewsDate5"></small>
+          <h3 id="News5"></h3>
+          <p id="NewsSSummary5"></p>
+          <a id="NewsURL5" target="blank">More Info</a>
+      </div>
 
   <!-- javascript -->
   <script>
@@ -93,6 +119,7 @@
       spCompare(stock);
       clearTable();
       stockTable(stock);
+      News(stock);
     } 
   
     // build chart of daily stock price
@@ -128,7 +155,7 @@
     var data = [trace1];
 
     var layout = {
-        title: `${stock} Daily Stock Price`,
+        title: `${name} Daily Stock Price`,
         xaxis: {
           range: [date[0], date[-1]],
           type: "date"
@@ -217,7 +244,7 @@
   var data = [trace1, trace2];
   
   var layout = {
-    title: `Comparing ${stock} to S&P 500 Performance`,
+    title: `Comparing ${name} Performance to S&P 500 Performance`,
     xaxis: {
       range: [date[0], date[-1]],
       type: "date"
@@ -348,7 +375,63 @@ function stockTable(stock){
   desc = "Shares Outstanding";
   addRow(desc, stock_sharesout);
   })
-}
+};
+
+function News(stock) {
+  var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
+  Plotly.d3.json(url, function(error, response) {
+    if (error) return console.warn(error);
+    //News 1 Info   
+    let news1= response.news[0].headline;
+    let summary1= response.news[0].summary;
+    let newsURL1=response.news[0].url;
+    let newsdate1=response.news[0].datetime;
+    
+    document.getElementById("News1").innerHTML = news1;
+    document.getElementById("NewsSSummary1").innerHTML = summary1;
+    document.getElementById("NewsURL1").href = newsURL1;
+    document.getElementById("NewsDate").innerHTML = "Posted On "+ newsdate1;
+    //News 2 Info 
+    let news2= response.news[1].headline;
+    let summary2= response.news[1].summary;
+    let newsURL2=response.news[1].url;
+    let newsdate2=response.news[1].datetime;
+    document.getElementById("News2").innerHTML = news2;
+    document.getElementById("NewsSSummary2").innerHTML = summary2;
+    document.getElementById("NewsURL2").href = newsURL2;
+    document.getElementById("NewsDate2").innerHTML = "Posted On "+ newsdate2;
+    //News 3 Info 
+    let news3= response.news[2].headline;
+    let summary3= response.news[2].summary;
+    let newsURL3=response.news[2].url;
+    let newsdate3=response.news[2].datetime;
+    document.getElementById("News3").innerHTML = news3;
+    document.getElementById("NewsSSummary3").innerHTML = summary3;
+    document.getElementById("NewsURL3").href = newsURL3;
+    document.getElementById("NewsDate3").innerHTML = "Posted On "+ newsdate3;
+    
+    //News 4 Info 
+    let news4= response.news[3].headline;
+    let summary4= response.news[3].summary;
+    let newsURL4=response.news[3].url;
+    let newsdate4=response.news[3].datetime;
+  
+    document.getElementById("News4").innerHTML = news4;
+    document.getElementById("NewsSSummary4").innerHTML = summary4;
+    document.getElementById("NewsURL4").href = newsURL1;
+    document.getElementById("NewsDate4").innerHTML = "Posted On "+ newsdate4;
+    //News 5 Info 
+    let news5= response.news[5].headline;
+    let summary5= response.news[5].summary;
+    let newsURL5=response.news[5].url;
+    let newsdate5=response.news[5].datetime;
+    document.getElementById("News5").innerHTML = news5;
+    document.getElementById("NewsSSummary5").innerHTML = summary5;
+    document.getElementById("NewsURL5").href = newsURL5;
+    document.getElementById("NewsDate5").innerHTML = "Posted On "+ newsdate5;
+  })};
+
+
 
 
 
