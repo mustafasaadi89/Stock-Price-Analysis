@@ -25,7 +25,7 @@ def history():
     print('History data')
     #stock = mongo.db.stock.find()
 
-    stock = list(mongo.db.stock.find())
+    stock = list(db.stock.find())
     print(stock)
     return render_template('index2.html', stock=stock)
 
@@ -47,7 +47,7 @@ def stocks(stockInput):
    print(response_json['quote']['open'])
    #print('company_name',company_name)
    
-   stock = mongo.db.stock
+   stock = db.stock
 
    stock_data = {}
 
