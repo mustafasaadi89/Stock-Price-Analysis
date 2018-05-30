@@ -1,478 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+  <head>
 
-  <!-- meta -->
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-  <!-- Bootstrap CSS File -->
-  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>Stock Dashboard</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../css/small-business.css" rel="stylesheet">
+
+    <!-- Plotly -->
+    <script src="https://unpkg.com/simple-statistics@5.0.0/dist/simple-statistics.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script> 
 
 
-  <title>Stock Information Page</title>
-  <meta content="" name="keywords">
-  <meta content="" name="description">
+  </head>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Poppins:300,300i,400,400i,500,500i,600,600i,700,700i|Playfair+Display:400,400i,700,700i,900,900i" rel="stylesheet">
+  <body>
 
-  <!-- Main Stylesheet File -->
-  <link href="css/style.css" rel="stylesheet">
-
-  <!-- Plotly -->
-  <script src="https://unpkg.com/simple-statistics@5.0.0/dist/simple-statistics.min.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-  <!-- Responsive css -->
-  <link href="css/responsive.css" rel="stylesheet">
-
-</head>
-
-<body>
-  
- 
-      </script>
-    </div>
-  <!-- Stock Scrolling Ticker 
-  <script src="https://widgets.macroaxis.com/widgets/url.jsp?t=42"></script> -->
-
-  <!-- page header -->
-  <div class="container">
-      <div class = "row">
-          <div class="col-md-12 jumbotron text-center">
-            <h1 class="text-primary">Stock Market Overview</h1>
-            <p> All your stock market data in one place</p>
-          </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">Stock Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/history">History</a>
+            </li>
+          </ul>
+        </div>
       </div>
-  </div>  
-
-  <!-- ticker button -->
-  <div class="container">
-    <h2>Search by Company Ticker<span class="typed"></span></h1>
-      <form class="form-inline">
-      <div class="form-group">
-        <label for="stockInput">Enter Ticker:</label>
-        <input type="text" class="form-control" id="stockInput" placeholder="Ticker">
-      </div>
-      <button id="submit" type="submit" class="btn btn-default">Plot Stock</button>
-      <div>
-        <a class="button btn btn-lg" href="/history" role="button">Stock History</a>
-      </div>
-      </form>
-    <div class="container">
-      <div id="daily_stock_chart"></div>    
-    </div>
-    <hr>
-    <div class = "container">
-      <table id="table" class="table table-striped table-condensed">
-      </table>
-    </div>
-    <hr>
-    <div class="container">
-      <div id="spCompare">
-      </div>
-    </div>
-    <div class="card mb-6">
-      <div class = "card-body"> 
-          <small id="NewsDate"></small>
-          <h3 id="News1"></h3>
-          <p id="NewsSSummary1"></p>
-          <a id="NewsURL1" target="blank" href="more info"></a>
-          <br>
-          <small id="NewsDate2"></small>
-          <h3 id="News2"></h3>
-          <p id="NewsSSummary2"></p>
-          <a id="NewsURL2" target="blank">More Info</a>
-          <br>
-          <small id="NewsDate3"></small>
-          <h3 id="News3"></h3>
-          <p id="NewsSSummary3"></p>
-          <a id="NewsURL3" target="blank">More Info</a>
-          <br>
-          <small id="NewsDate4"></small>
-          <h3 id="News4"></h3>
-          <p id="NewsSSummary4"></p>
-          <a id="NewsURL4" target="blank">More Info</a>
-          <br>
-          <small id="NewsDate5"></small>
-          <h3 id="News5"></h3>
-          <p id="NewsSSummary5"></p>
-          <a id="NewsURL5" target="blank">More Info</a>
-      </div>
-
-  <!-- javascript -->
-  <script>
-    // button handler
-    function handleSubmit(){
-      // prevent page from refreshing
-      Plotly.d3.event.preventDefault();
-
-      // select input value from the form
-      let stock=Plotly.d3.select("#stockInput").node().value;
-      stock=stock.toUpperCase();
-      // clear the input value
-      Plotly.d3.select("#stockInput").node().value = "";
-
-      // Build the plot with the new stock
-      buildDailyPlot(stock);
-      spCompare(stock);
-      clearTable();
-      stockTable(stock);
-      News(stock);
-      stockHistory(stock);
-      console.log('stock',stock);
-      urlhistory = `http://localhost:5000/stocks/${stock}`;
-    } 
-  
-    
-    
-    function stockHistory(stock){
-     var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
-     Plotly.d3.json(url, function(error, response){
-       if (error) return console.warn(error);
-
-       let close = response.quote.close;
-       let open = response.quote.open;
-       console.log(close);
-       console.log(open);
-
-       urlhistory = `http://localhost:5000/stocks/${stock}`
-       
-       data = {
-         "open":open,
-         "close":close,
-         "stock":stock
-       }
-
-       Plotly.d3.json(urlhistory, function(error, data){
-           if (error) return console.warn(error);
-           
-            console.log(data.response);
-       });
-
-     });
-    }
-    
-    
-    // build chart of daily stock price
-    function buildDailyPlot(stock){
-      var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
-      var urlSP = `https://api.iextrading.com/1.0/stock/spy/batch?types=quote,news,chart&range=2y&last=1`
-  
-    Plotly.d3.json(url, function(error, response) {
-  
-      if (error) return console.warn(error);
-  
-      // Grab values from the response json object to build the plots
-      var name = response.quote.companyName;
-      let date = [];
-      let close =[];
-      for (let i = 0; i < response.chart.length; i++) { 
-        var dates = response.chart[i].date;
-        date.push(dates);
-        var closingPrices = response.chart[i].close;
-        close.push(closingPrices);}
-
-    var trace1 = {
-        type: "scatter",
-        mode: "lines",
-        name: name,
-        x: date,
-        y: close,
-        line: {
-            color: "#17BECF"
-        }
-        };
-
-    var data = [trace1];
-
-    var layout = {
-        title: `${name} Daily Stock Price`,
-        xaxis: {
-          range: [date[0], date[-1]],
-          type: "date"
+    </nav>
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com" rel="noopener" target="_blank"><span class="blue-text"></span></a> </div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
+      {
+      "symbols": [
+        {
+          "title": "S&P 500",
+          "proName": "INDEX:SPX"
         },
-        yaxis: {
-          autorange: true,
-          type: "linear"
+        {
+          "title": "Nasdaq 100",
+          "proName": "INDEX:IUXX"
+        },
+        {
+          "title": "EUR/USD",
+          "proName": "FX_IDC:EURUSD"
+        },
+        {
+          "title": "BTC/USD",
+          "proName": "BITFINEX:BTCUSD"
+        },
+        {
+          "title": "ETH/USD",
+          "proName": "BITFINEX:ETHUSD"
         }
-      };
-  
-      Plotly.newPlot("daily_stock_chart", data, layout);
-    });
-  } 
-  
-  // compare user ticker versus S&P 500
-  function spCompare(stock) {
-
-  var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
-  var urlSP = `https://api.iextrading.com/1.0/stock/spy/batch?types=quote,news,chart&range=2y&last=1`
-
-  Plotly.d3.json(url, function(error, response) {
-
-  if (error) return console.warn(error);
-
-  // Grab values from the response json object to build the plots
-  var name = response.quote.companyName;
-  let date = [];
-  let close =[];
-  let initialprice1 = [];
-  for (let i = 0; i < response.chart.length; i++) { 
-    var dates = response.chart[i].date;
-    date.push(dates);
-    var closingPrices = response.chart[i].close;
-    close.push(closingPrices);
-    var change1 =  closingPrices/response.chart[0].close;
-    initialprice1.push(change1*100);}
-  
-  
-  console.log(name)
-  console.log(date)
-  console.log(close)
-  Plotly.d3.json(urlSP, function(error, response){
-  
-  if (error) return console.warn(error);
-  
-  var nameSP = response.quote.companyName;
-  let dateSP = [];
-  let closeSP =[];
-  let initialprice2 = [];
-  for (let i = 0; i < response.chart.length; i++) { 
-    var datesSP = response.chart[i].date;
-    dateSP.push(datesSP);
-    var closingPricesSP = response.chart[i].close;
-    closeSP.push(closingPricesSP);
-    var change2 = closingPricesSP/response.chart[0].close;
-    initialprice2.push(change2*100);}
-    
-
-  console.log(nameSP)
-  console.log(dateSP)
-  console.log(closeSP)
-
-
-  var trace1 = {
-    type: "scatter",
-    mode: "lines",
-    name: name,
-    x: date,
-    y: initialprice1,
-    line: {
-      color: "#17BECF"
+      ],
+      "locale": "en"
     }
-  };
+      </script>
+    </div> 
+    <!-- Page Content -->
+    <div class="container">
 
-  var trace2 = {
-    type:"scatter",
-    mode:"lines",
-    name: nameSP,
-    x:dateSP,
-    y:initialprice2,
-    line:{
-      color:"black"
-    }
-  
-  };
-  var data = [trace1, trace2];
-  
-  var layout = {
-    title: `Comparing ${name} Performance to S&P 500 Performance`,
-    xaxis: {
-      range: [date[0], date[-1]],
-      type: "date"
-    },
-    yaxis: {
-      autorange: true,
-      type: "linear"
-    }
-  };
+    <!-- Heading Row -->
+    <div class="row my-4">
+      <div class="col-lg-8">
+        <img class="img-fluid rounded" src="images/stock-img.jpg" alt="">
+      </div>
+      <!-- /.col-lg-8 -->
+      <div class="col-lg-4">
+        <h1>Search by Company Ticker</h1>
+        <p>Click to find out the latest stock information </p>
+    <!-- ticker button -->
+    <div class="container">
+        <form class="form-inline">
+        <div class="form-group">
+          <label for="stockInput">Enter Ticker:  </label>
+          <input type="text" class="form-control"style="margin:15px" id="stockInput" placeholder="Ticker">
+        </div>
+        <button id="submit" type="submit" class="btn btn-default" >Plot Stock</button>
+        </form>
+    </div>
+        <!-- /.col-md-4 -->
+      </div>
+      <!-- /.row -->
+      </div>
+      <!-- Call to Action Well -->
+      <div class="card text-white bg-secondary my-4 text-center">
+        <div class="card-body">
+          <script src="http://widgets.macroaxis.com/widgets/url.jsp?t=42"></script>
+        </div>
+      </div>
+      <!-- Data -->
+      <div class="card mb-6">
+        <div class = "card-body">
+            <div id="daily_stock_chart"></div>
+            <div class = "container">
+              <table id="table" class="table table-striped table-condensed">
+              </table>
+              <div id="spCompare"></div>
+            </div>
+        </div>
+      <!-- Content Row -->
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title" id="News1"></h2>
+              <p class="card-text" id="NewsDate"></p>
+              <p class="card-text" id="NewsSummary1"></p>
+            </div>
+            <div class="card-footer">
+              <a href="#" class="btn btn-primary" id="NewsURL1" target="blank">More Info</a>
+            </div>
+          </div>
+        </div>
+        <!-- /.col-md-4 -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title" id="News2"></h2>
+              <p class="card-text" id="NewsDate2"></p>
+              <p class="card-text" id="NewsSummary2"></p>
+            </div>
+            <div class="card-footer">
+              <a href="#" class="btn btn-primary" id="NewsURL2" target="blank">More Info</a>
+            </div>
+          </div>
+        </div>
+        <!-- /.col-md-4 -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title" id="News3"></h2>
+              <p class="card-text" id="NewsDate3"></p>
+              <p class="card-text" id="NewsSummary3"></p>
+            </div>
+            <div class="card-footer">
+              <a href="#" class="btn btn-primary" id="NewsURL3" target="blank">More Info</a>
+            </div>
+          </div>
+        </div>
+        <!-- /.col-md-4 -->
 
-  Plotly.newPlot("spCompare", data, layout);
-})});
-}
+      </div>
+      <!-- /.row -->
 
-// Currency formatter Function. turns number into $
-function CurrencyFormat(number){
-  return new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2}).format(number)
-};
+    </div>
+    <!-- /.container -->
 
-// Function to determine if number is in millions or billions and divide accordingly
-function DivideNumber(number){
- if ( number /1000000000 <1){
-  anumber = number /  1000000
-  return fnumber = CurrencyFormat(anumber.toFixed(2)) + " million"
- } else {
-   anumber = number /  1000000000
-   return fnumber = CurrencyFormat(anumber.toFixed(2)) + " billion"
- }
-};
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; The Bryan Lowe's</p>
+      </div>
+      <!-- /.container -->
+    </footer>
 
- 
-function addRow(desc, output) {
-    var table = document.getElementById("table");
-    var row = table.insertRow(-1);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    cell1.innerHTML = desc;
-    cell2.innerHTML = output;
-}
+    <!-- Bootstrap core JavaScript -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- JSON Script Files -->
+    <script src="js/plots.js"></script>
+    <script src="js/stocktable.js"></script>
 
-function clearTable(){
-let tableHeaderRowCount = 0;
-var table = document.getElementById('table');
-var rowCount = table.rows.length;
-for (var i = tableHeaderRowCount; i < rowCount; i++) {
-    table.deleteRow(tableHeaderRowCount);
-}
-}
-
-function stockTable(stock){
-  url=`https://api.iextrading.com/1.0/stock/${stock}/stats`
-
-  Plotly.d3.json(url, function(error, response) {
-
-  if (error) return console.warn(error);
-
-  // grab values from response json
-  // company name
-  let Stock_name= response.companyName;
-  desc = "Company Name";
-  addRow(desc, Stock_name);
-
-  // company market cap
-  let Stock_mrktcap=response.marketcap;
-  // determine if market cap is in millions or billions
-  Stock_mrktcap = DivideNumber(Stock_mrktcap);
-  desc = "Market Cap";
-  addRow(desc, Stock_mrktcap);
-  // console.log(Stock_mrktcap);
-
-  // Company Revenue
-  let stock_revenue=response.revenue;
-  stock_revenue=DivideNumber(stock_revenue);
-  desc = "Revenue";
-  addRow(desc,stock_revenue);
-  // console.log(stock_revenue);
-
-  // Company gross profit
-  let stock_grossProfit = response.grossProfit;
-  stock_grossProfit = DivideNumber(stock_grossProfit);
-  desc = "Gross Profit";
-  addRow(desc, stock_grossProfit);
-
-  // Company EBIDTA
-  let stock_ebitda = response.EBITDA;
-  stock_ebitda = DivideNumber(stock_ebitda);
-  desc = "EBIDTA";
-  addRow(desc, stock_ebitda);
-  
-  // priceToSales
-  let stock_priceToSales = response.priceToSales;
-  stock_priceToSales = stock_priceToSales.toFixed(2);
-  desc = "Price to Sales";
-  addRow(desc, stock_priceToSales);
-
-  // priceToBook
-  let stock_priceToBook = response.priceToBook;
-  stock_priceToBook = stock_priceToBook.toFixed(2);
-  desc = "Price to Book";
-  addRow(desc, stock_priceToBook);
-
-  // institutionPercent
-  let stock_institutionPercent = response.institutionPercent
-  desc = "Percentage of Shares Owned by Institutional Investors";
-  addRow(desc,stock_institutionPercent);
-
-  // latestEPS
-  let stock_latestEPS = response.latestEPS
-  desc = "Latest EPS";
-  addRow(desc, stock_latestEPS);
-
-  // dividendRate (%)
-  let stock_dividentRate = response.dividendRate
-  desc = "Divident Rate (%)";
-  addRow(desc, stock_dividentRate);
-
-  // dividendYield
-  let stock_dividendYield = response.dividendYield
-  stock_dividendYield = stock_dividendYield.toFixed(2)
-  desc = "Dividend Yield"
-  addRow(desc, stock_dividendYield);
-
-  // sharesOutstanding
-  let stock_sharesout = response.sharesOutstanding
-  desc = "Shares Outstanding";
-  addRow(desc, stock_sharesout);
-  })
-};
-
-function News(stock) {
-  var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
-  Plotly.d3.json(url, function(error, response) {
-    if (error) return console.warn(error);
-    //News 1 Info   
-    let news1= response.news[0].headline;
-    let summary1= response.news[0].summary;
-    let newsURL1=response.news[0].url;
-    let newsdate1=response.news[0].datetime;
-    
-    document.getElementById("News1").innerHTML = news1;
-    document.getElementById("NewsSSummary1").innerHTML = summary1;
-    document.getElementById("NewsURL1").href = newsURL1;
-    document.getElementById("NewsDate").innerHTML = "Posted On "+ newsdate1;
-    //News 2 Info 
-    let news2= response.news[1].headline;
-    let summary2= response.news[1].summary;
-    let newsURL2=response.news[1].url;
-    let newsdate2=response.news[1].datetime;
-    document.getElementById("News2").innerHTML = news2;
-    document.getElementById("NewsSSummary2").innerHTML = summary2;
-    document.getElementById("NewsURL2").href = newsURL2;
-    document.getElementById("NewsDate2").innerHTML = "Posted On "+ newsdate2;
-    //News 3 Info 
-    let news3= response.news[2].headline;
-    let summary3= response.news[2].summary;
-    let newsURL3=response.news[2].url;
-    let newsdate3=response.news[2].datetime;
-    document.getElementById("News3").innerHTML = news3;
-    document.getElementById("NewsSSummary3").innerHTML = summary3;
-    document.getElementById("NewsURL3").href = newsURL3;
-    document.getElementById("NewsDate3").innerHTML = "Posted On "+ newsdate3;
-    
-    //News 4 Info 
-    let news4= response.news[3].headline;
-    let summary4= response.news[3].summary;
-    let newsURL4=response.news[3].url;
-    let newsdate4=response.news[3].datetime;
-  
-    document.getElementById("News4").innerHTML = news4;
-    document.getElementById("NewsSSummary4").innerHTML = summary4;
-    document.getElementById("NewsURL4").href = newsURL1;
-    document.getElementById("NewsDate4").innerHTML = "Posted On "+ newsdate4;
-    //News 5 Info 
-    let news5= response.news[5].headline;
-    let summary5= response.news[5].summary;
-    let newsURL5=response.news[5].url;
-    let newsdate5=response.news[5].datetime;
-    document.getElementById("News5").innerHTML = news5;
-    document.getElementById("NewsSSummary5").innerHTML = summary5;
-    document.getElementById("NewsURL5").href = newsURL5;
-    document.getElementById("NewsDate5").innerHTML = "Posted On "+ newsdate5;
-  })};
-
-
-
-
-   // Add event listener for submit button
-   Plotly.d3.select("#submit").on("click", handleSubmit);
-
-  </script>
   </body>
-  </html>
+
+</html>
