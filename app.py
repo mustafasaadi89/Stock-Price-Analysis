@@ -12,11 +12,8 @@ mongo = PyMongo(app)
 
 
 conn = 'mongodb://stockAnalysis:stocks1@ds135760.mlab.com:35760/heroku_mfn0bnmj'
-client = pymongo.MongoClient(conn)
+client = PyMongo.MongoClient(conn)
 db = client.heroku_mfn0bnmj
-
-
-
 
 @app.route('/')
 def index():
