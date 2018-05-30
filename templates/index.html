@@ -59,6 +59,9 @@
         <input type="text" class="form-control" id="stockInput" placeholder="Ticker">
       </div>
       <button id="submit" type="submit" class="btn btn-default">Plot Stock</button>
+      <div>
+        <a class="button btn btn-lg" href="/history" role="button">Stock History</a>
+      </div>
       </form>
     <div class="container">
       <div id="daily_stock_chart"></div>    
@@ -120,8 +123,41 @@
       clearTable();
       stockTable(stock);
       News(stock);
+      stockHistory(stock);
+      console.log('stock',stock);
+      urlhistory = `http://localhost:5000/stocks/${stock}`;
     } 
   
+    
+    
+    function stockHistory(stock){
+     var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
+     Plotly.d3.json(url, function(error, response){
+       if (error) return console.warn(error);
+
+       let close = response.quote.close;
+       let open = response.quote.open;
+       console.log(close);
+       console.log(open);
+
+       urlhistory = `http://localhost:5000/stocks/${stock}`
+       
+       data = {
+         "open":open,
+         "close":close,
+         "stock":stock
+       }
+
+       Plotly.d3.json(urlhistory, function(error, data){
+           if (error) return console.warn(error);
+           
+            console.log(data.response);
+       });
+
+     });
+    }
+    
+    
     // build chart of daily stock price
     function buildDailyPlot(stock){
       var url = `https://api.iextrading.com/1.0/stock/${stock}/batch?types=quote,news,chart&range=2y&last=5`;
@@ -430,7 +466,6 @@ function News(stock) {
     document.getElementById("NewsURL5").href = newsURL5;
     document.getElementById("NewsDate5").innerHTML = "Posted On "+ newsdate5;
   })};
-
 
 
 
