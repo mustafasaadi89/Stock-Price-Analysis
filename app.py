@@ -91,7 +91,7 @@ def my_link():
     # create a JSON
     json_string = (interest_over_time_df[interest_over_time_df.columns[0]]).to_json()
 
-    return (json_string)
+    return json_string
 
     
 if __name__ == "__main__":
