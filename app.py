@@ -3,6 +3,9 @@ from flask_pymongo import PyMongo
 import pymongo
 import requests
 
+from pytrends.request import TrendReq
+import pandas as pd
+
 import datetime
 import time
 
@@ -72,6 +75,23 @@ def stocks(stockInput):
 
    return jsonify({'response':'Success'})
    #return redirect("http://localhost:5000/", code=302)  
+
+@app.route('/my-link/')
+def my_link():
+    pytrend = TrendReq()
+    # Create payload and capture API tokens. Only needed for interest_over_time(), interest_by_region() & related_queries()
+    pytrend.build_payload(kw_list=['nvda stock'])
+
+    kw_list=['nvidia stock']
+    print('again')
+
+    # Interest Over Time dataFrame
+    interest_over_time_df = pytrend.interest_over_time()
+
+    # create a JSON
+    json_string = (interest_over_time_df[interest_over_time_df.columns[0]]).to_json()
+
+    return (json_string)
 
     
 if __name__ == "__main__":

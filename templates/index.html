@@ -103,6 +103,8 @@
           <p id="NewsSSummary5"></p>
           <a id="NewsURL5" target="blank">More Info</a>
       </div>
+    
+      <a href="/my-link/">YO TRENDS</a>
 
   <!-- javascript -->
   <script>
@@ -295,6 +297,8 @@
 })});
 }
 
+
+
 // Currency formatter Function. turns number into $
 function CurrencyFormat(number){
   return new Intl.NumberFormat('en-US', {
@@ -465,7 +469,22 @@ function News(stock) {
     document.getElementById("NewsSSummary5").innerHTML = summary5;
     document.getElementById("NewsURL5").href = newsURL5;
     document.getElementById("NewsDate5").innerHTML = "Posted On "+ newsdate5;
-  })};
+  })
+  };
+
+  function Trends(){
+    const googleTrends = require('google-trends-api');
+    googleTrends.interestOverTime({keyword: 'Facebook Stock'})
+      .then(function(results){
+        console.log(results);
+        console.log('YAYYYY');
+      })
+      .catch(function(err){
+        console.error(err);
+        console.log('NOOOOO');
+      });
+};
+
 
 
 
